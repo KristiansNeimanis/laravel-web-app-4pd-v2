@@ -7,6 +7,7 @@ use App\Models\PostStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -30,12 +31,12 @@ class PostController extends Controller
                 $query->whereHas('status', function ($query) {
                     $query->where('name', PostStatus::STATUS_PUBLIC);
                 })
-                ->orWhere(function ($query) use ($userId) {
-                    $query->where('user_id', $userId)
-                        ->whereHas('status', function ($query) {
-                            $query->where('name', PostStatus::STATUS_PRIVATE); // Assuming you have a constant for private status
-                        });
-                });
+                    ->orWhere(function ($query) use ($userId) {
+                        $query->where('user_id', $userId)
+                            ->whereHas('status', function ($query) {
+                                $query->where('name', PostStatus::STATUS_PRIVATE); // Assuming you have a constant for private status
+                            });
+                    });
             })
             ->get();
 
@@ -47,6 +48,7 @@ class PostController extends Controller
      */
     public function create()
     {
+        $statuses = PostStatus::all();
         return view('post.create', ['statuses' => $statuses]);
     }
 
@@ -94,6 +96,7 @@ class PostController extends Controller
     {
         Gate::authorize('update', $post);
         $statuses = PostStatus::all();
+        // dd($statuses);
         return view('post.edit', ['post' => $post, 'statuses' => $statuses]);
     }
 
@@ -121,7 +124,7 @@ class PostController extends Controller
             $path = $request->file('image')->store('images', 'public');
             $post->image_path = $path;
         }
-        
+
         // Image removal without replacement has to be done in separate method
 
         $post->save();
