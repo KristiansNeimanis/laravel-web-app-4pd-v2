@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\User;
 use App\Models\PostStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -119,7 +120,7 @@ class PostController extends Controller
 
         if ($request->hasFile('image')) {
             if ($post->image_path) {
-                \Storage::disk('public')->delete($post->image_path);
+                Storage::disk('public')->delete($post->image_path);
             }
             $path = $request->file('image')->store('images', 'public');
             $post->image_path = $path;
@@ -140,7 +141,7 @@ class PostController extends Controller
         Gate::authorize('delete', $post);
         $post->delete();
         if ($post->image_path) {
-            \Storage::disk('public')->delete($post->image_path);
+            Storage::disk('public')->delete($post->image_path);
         }
         return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
     }

@@ -24,12 +24,11 @@
                                         </span>
                                     @endif
                                 </h2>
-
                                 <h3>by {{ $post->user->name }}</h3>
                                 <p>{{ $post->content }}</p>
                                 @if ($post->image_path)
                                     <img src="{{ Storage::url($post->image_path) }}" alt="Post Image">
-                                @endif                            
+                                @endif   
                             </li>
                         @endforeach
                         </ul>
